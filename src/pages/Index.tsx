@@ -1,11 +1,28 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useToast } from '../hooks/use-toast';
 import ImageUpload from '../components/ImageUpload';
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
-import { generateTryOn, generateVideo } from '../utils/fal';
-import { Loader2 } from 'lucide-react';
+import { Input } from '../components/ui/input';
+import { Label } from '../components/ui/label';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '../components/ui/select';
+import { 
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from '../components/ui/sheet';
+import { generateTryOn, generateVideo, initializeFal, type FalModel } from '../utils/fal';
+import { Loader2, Settings } from 'lucide-react';
 
 const Index = () => {
   const [personImage, setPersonImage] = useState<string | null>(null);
@@ -14,7 +31,15 @@ const Index = () => {
   const [video, setVideo] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [videoLoading, setVideoLoading] = useState(false);
+  const [apiKey, setApiKey] = useState(localStorage.getItem('FAL_KEY') || '');
+  const [selectedModel, setSelectedModel] = useState<FalModel>('fal-ai/fashion-tryon');
   const { toast } = useToast();
+
+  useEffect(() => {
+    if (apiKey) {
+      initializeFal(apiKey);
+    }
+  }, [apiKey]);
 
   const handleTryOn = async () => {
     if (!personImage || !clothingImage) {
@@ -26,9 +51,18 @@ const Index = () => {
       return;
     }
 
+    if (!apiKey) {
+      toast({
+        title: "Missing API Key",
+        description: "Please add your FAL.ai API key in settings.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setLoading(true);
     try {
-      const tryOnResult = await generateTryOn(personImage, clothingImage);
+      const tryOnResult = await generateTryOn(personImage, clothingImage, selectedModel);
       setResult(tryOnResult.image);
       toast({
         title: "Success",
@@ -77,9 +111,54 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 p-8">
       <div className="max-w-6xl mx-auto space-y-8">
-        <div className="text-center space-y-4">
-          <h1 className="text-4xl font-bold text-gray-900">Virtual Try-On</h1>
-          <p className="text-lg text-gray-600">Upload images to see how clothes look on you</p>
+        <div className="flex justify-between items-center">
+          <div className="space-y-4">
+            <h1 className="text-4xl font-bold text-gray-900">Virtual Try-On</h1>
+            <p className="text-lg text-gray-600">Upload images to see how clothes look on you</p>
+          </div>
+          
+          <Sheet>
+            <SheetTrigger asChild>
+              <Button variant="outline" size="icon">
+                <Settings className="h-4 w-4" />
+              </Button>
+            </SheetTrigger>
+            <SheetContent>
+              <SheetHeader>
+                <SheetTitle>Settings</SheetTitle>
+                <SheetDescription>
+                  Configure your FAL.ai API settings
+                </SheetDescription>
+              </SheetHeader>
+              <div className="space-y-6 py-6">
+                <div className="space-y-2">
+                  <Label htmlFor="apiKey">FAL.ai API Key</Label>
+                  <Input
+                    id="apiKey"
+                    type="password"
+                    value={apiKey}
+                    onChange={(e) => setApiKey(e.target.value)}
+                    placeholder="Enter your FAL.ai API key"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="model">Model</Label>
+                  <Select
+                    value={selectedModel}
+                    onValueChange={(value) => setSelectedModel(value as FalModel)}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select a model" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="fal-ai/fashion-tryon">Fashion Try-On</SelectItem>
+                      <SelectItem value="fal-ai/fashion-edit">Fashion Edit</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            </SheetContent>
+          </Sheet>
         </div>
 
         <div className="grid md:grid-cols-2 gap-8">

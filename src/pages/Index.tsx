@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { useToast } from '../hooks/use-toast';
 import ImageUpload from '../components/ImageUpload';
@@ -20,7 +21,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from '../components/ui/sheet';
-import { generateTryOn, generateVideo, initializeFal, type FalModel } from '../utils/fal';
+import { generateTryOn, generateVideo, initializeFal, type FalModel, type FalCategory } from '../utils/fal';
 import { Loader2, Settings } from 'lucide-react';
 
 const Index = () => {
@@ -32,6 +33,7 @@ const Index = () => {
   const [videoLoading, setVideoLoading] = useState(false);
   const [apiKey, setApiKey] = useState(localStorage.getItem('FAL_KEY') || '');
   const [selectedModel, setSelectedModel] = useState<FalModel>('fashn/tryon');
+  const [selectedCategory, setSelectedCategory] = useState<FalCategory>('tops');
   const { toast } = useToast();
 
   useEffect(() => {
@@ -61,7 +63,7 @@ const Index = () => {
 
     setLoading(true);
     try {
-      const tryOnResult = await generateTryOn(personImage, clothingImage, selectedModel);
+      const tryOnResult = await generateTryOn(personImage, clothingImage, selectedCategory, selectedModel);
       setResult(tryOnResult.image);
       toast({
         title: "Success",
@@ -152,6 +154,22 @@ const Index = () => {
                     <SelectContent>
                       <SelectItem value="fashn/tryon">Fashion Try-On</SelectItem>
                       <SelectItem value="fal-ai/fashion-edit">Fashion Edit</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="category">Category</Label>
+                  <Select
+                    value={selectedCategory}
+                    onValueChange={(value) => setSelectedCategory(value as FalCategory)}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select a category" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="tops">Tops</SelectItem>
+                      <SelectItem value="bottoms">Bottoms</SelectItem>
+                      <SelectItem value="one-pieces">One Pieces</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>

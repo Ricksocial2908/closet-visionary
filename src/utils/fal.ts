@@ -2,6 +2,7 @@
 import * as fal from '@fal-ai/serverless-client';
 
 export type FalModel = 'fashn/tryon' | 'fal-ai/fashion-edit';
+export type FalCategory = 'tops' | 'bottoms' | 'one-pieces';
 
 export const initializeFal = (apiKey: string) => {
   fal.config({
@@ -10,13 +11,18 @@ export const initializeFal = (apiKey: string) => {
   localStorage.setItem('FAL_KEY', apiKey);
 };
 
-export const generateTryOn = async (personImage: string, clothingImage: string, model: FalModel = 'fashn/tryon') => {
+export const generateTryOn = async (
+  personImage: string, 
+  clothingImage: string, 
+  category: FalCategory = 'tops',
+  model: FalModel = 'fashn/tryon'
+) => {
   try {
     const result = await fal.run(model, {
       input: {
         model_image: personImage,
         garment_image: clothingImage,
-        category: "tops", // Using the correct category value from the allowed options
+        category,
       },
     });
     return result as { image: string };

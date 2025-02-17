@@ -1,7 +1,7 @@
 
 import * as fal from '@fal-ai/serverless-client';
 
-export type FalModel = 'fal-ai/fashion-tryon' | 'fal-ai/fashion-edit';
+export type FalModel = 'fal-ai/virtual-try-on' | 'fal-ai/fashion-edit';
 
 export const initializeFal = (apiKey: string) => {
   fal.config({
@@ -10,7 +10,7 @@ export const initializeFal = (apiKey: string) => {
   localStorage.setItem('FAL_KEY', apiKey);
 };
 
-export const generateTryOn = async (personImage: string, clothingImage: string, model: FalModel = 'fal-ai/fashion-tryon') => {
+export const generateTryOn = async (personImage: string, clothingImage: string, model: FalModel = 'fal-ai/virtual-try-on') => {
   try {
     const result = await fal.run(model, {
       input: {

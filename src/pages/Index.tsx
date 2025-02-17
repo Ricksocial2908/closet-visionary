@@ -151,7 +151,7 @@ const Index = () => {
                       <SelectValue placeholder="Select a model" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="fal-ai/fashion-tryon">Fashion Try-On</SelectItem>
+                      <SelectItem value="fal-ai/virtual-try-on">Virtual Try-On</SelectItem>
                       <SelectItem value="fal-ai/fashion-edit">Fashion Edit</SelectItem>
                     </SelectContent>
                   </Select>

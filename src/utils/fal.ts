@@ -4,6 +4,14 @@ import * as fal from '@fal-ai/serverless-client';
 export type FalModel = 'fashn/tryon';
 export type FalCategory = 'tops' | 'bottoms' | 'one-pieces';
 
+interface FalImage {
+  url: string;
+}
+
+interface FalResponse {
+  images: FalImage[];
+}
+
 export const initializeFal = (apiKey: string) => {
   fal.config({
     credentials: apiKey,
@@ -24,7 +32,7 @@ export const generateTryOn = async (
         garment_image: clothingImage,
         category,
       },
-    });
+    }) as FalResponse;
     
     // Extract the URL from the images array
     if (result && Array.isArray(result.images) && result.images.length > 0) {

@@ -31,11 +31,13 @@ const ImageUpload = ({ onImageSelect, label }: ImageUploadProps) => {
         <h3 className="text-lg font-medium text-gray-900">{label}</h3>
         <div className="relative h-64 w-full overflow-hidden rounded-lg border-2 border-dashed border-gray-300 hover:border-gray-400 transition-colors">
           {preview ? (
-            <img
-              src={preview}
-              alt="Preview"
-              className="h-full w-full object-cover"
-            />
+            <div className="h-full w-full flex items-center justify-center bg-gray-50">
+              <img
+                src={preview}
+                alt="Preview"
+                className="max-w-full max-h-full object-contain"
+              />
+            </div>
           ) : (
             <div className="flex h-full w-full items-center justify-center">
               <div className="text-center">

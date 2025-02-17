@@ -25,7 +25,13 @@ export const generateTryOn = async (
         category,
       },
     });
-    return result as { image: string };
+    
+    // Extract the URL from the images array
+    if (result && Array.isArray(result.images) && result.images.length > 0) {
+      return { image: result.images[0].url };
+    }
+    
+    throw new Error('No image in response');
   } catch (error) {
     console.error('Error generating try-on:', error);
     throw error;

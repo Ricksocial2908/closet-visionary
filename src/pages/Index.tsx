@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { useToast } from '../hooks/use-toast';
 import ImageUpload from '../components/ImageUpload';
@@ -62,13 +63,30 @@ const Index = () => {
 
     setLoading(true);
     try {
+      console.log('Starting try-on generation...');
+      console.log('Person image:', personImage?.slice(0, 100) + '...');
+      console.log('Clothing image:', clothingImage?.slice(0, 100) + '...');
+      
       const tryOnResult = await generateTryOn(personImage, clothingImage, selectedCategory, selectedModel);
-      setResult(tryOnResult.image);
-      toast({
-        title: "Success",
-        description: "Try-on generated successfully!",
-      });
+      console.log('Try-on result received:', tryOnResult);
+      
+      if (tryOnResult && tryOnResult.image) {
+        console.log('Setting result image:', tryOnResult.image.slice(0, 100) + '...');
+        setResult(tryOnResult.image);
+        toast({
+          title: "Success",
+          description: "Try-on generated successfully!",
+        });
+      } else {
+        console.error('No image in result:', tryOnResult);
+        toast({
+          title: "Error",
+          description: "Failed to generate try-on. No image in response.",
+          variant: "destructive",
+        });
+      }
     } catch (error) {
+      console.error('Error in handleTryOn:', error);
       toast({
         title: "Error",
         description: "Failed to generate try-on. Please try again.",
@@ -98,6 +116,7 @@ const Index = () => {
         description: "Video generated successfully!",
       });
     } catch (error) {
+      console.error('Error in handleVideoGeneration:', error);
       toast({
         title: "Error",
         description: "Failed to generate video. Please try again.",
@@ -107,6 +126,14 @@ const Index = () => {
       setVideoLoading(false);
     }
   };
+
+  // Debug useEffect to monitor result state
+  useEffect(() => {
+    console.log('Result state changed:', result ? 'Has image' : 'No image');
+    if (result) {
+      console.log('Result preview:', result.slice(0, 100) + '...');
+    }
+  }, [result]);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 p-8">
@@ -207,11 +234,13 @@ const Index = () => {
           {result && (
             <Card className="p-6 backdrop-blur-sm bg-white/30 border border-white/20 max-w-[800px] mx-auto">
               <h2 className="text-xl font-semibold mb-4">Try-On Result</h2>
-              <img 
-                src={result} 
-                alt="Try-on result" 
-                className="w-full h-auto max-h-[600px] rounded-lg object-contain"
-              />
+              <div className="bg-white rounded-lg overflow-hidden">
+                <img 
+                  src={result} 
+                  alt="Try-on result" 
+                  className="w-full h-auto max-h-[600px] object-contain"
+                />
+              </div>
               <div className="mt-4 flex justify-center">
                 <Button
                   onClick={handleVideoGeneration}

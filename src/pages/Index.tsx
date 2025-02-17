@@ -131,6 +131,11 @@ const Index = () => {
       title: "Download Started",
       description: "Your image is being downloaded.",
     });
+
+    const galleryElement = document.querySelector('#gallery-section');
+    if (galleryElement) {
+      galleryElement.scrollIntoView({ behavior: 'smooth' });
+    }
   };
 
   return (
@@ -252,7 +257,9 @@ const Index = () => {
             </Card>
           )}
 
-          <Gallery items={galleryItems} onDelete={handleGalleryDelete} />
+          <div id="gallery-section">
+            <Gallery items={galleryItems} onDelete={handleGalleryDelete} />
+          </div>
         </div>
       </div>
     </div>

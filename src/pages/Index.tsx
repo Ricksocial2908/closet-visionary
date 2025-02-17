@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useToast } from '../hooks/use-toast';
 import ImageUpload from '../components/ImageUpload';
@@ -32,7 +31,7 @@ const Index = () => {
   const [loading, setLoading] = useState(false);
   const [videoLoading, setVideoLoading] = useState(false);
   const [apiKey, setApiKey] = useState(localStorage.getItem('FAL_KEY') || '');
-  const [selectedModel, setSelectedModel] = useState<FalModel>('fal-ai/fashn/tryon');
+  const [selectedModel, setSelectedModel] = useState<FalModel>('fal-ai/fashion/try-on');
   const { toast } = useToast();
 
   useEffect(() => {
@@ -151,7 +150,7 @@ const Index = () => {
                       <SelectValue placeholder="Select a model" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="fal-ai/fashn/tryon">Fashion Try-On</SelectItem>
+                      <SelectItem value="fal-ai/fashion/try-on">Fashion Try-On</SelectItem>
                       <SelectItem value="fal-ai/fashion-edit">Fashion Edit</SelectItem>
                     </SelectContent>
                   </Select>

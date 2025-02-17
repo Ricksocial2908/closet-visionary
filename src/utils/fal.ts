@@ -4,18 +4,9 @@ import * as fal from '@fal-ai/serverless-client';
 export type FalModel = 'fashn/tryon';
 export type FalCategory = 'tops' | 'bottoms' | 'one-pieces';
 
-interface FalImage {
-  url: string;
-}
-
-interface FalResponse {
-  images: FalImage[];
-}
-
 export const initializeFal = (apiKey: string) => {
   fal.config({
     credentials: apiKey,
-    proxyUrl: 'https://gateway.fal.ai'  // Add the proper proxy URL
   });
   localStorage.setItem('FAL_KEY', apiKey);
 };
@@ -27,17 +18,13 @@ export const generateTryOn = async (
   model: FalModel = 'fashn/tryon'
 ) => {
   try {
-    console.log('Starting try-on generation...');
-    console.log('Person image:', personImage?.slice(0, 100) + '...');
-    console.log('Clothing image:', clothingImage?.slice(0, 100) + '...');
-    
     const result = await fal.run(model, {
       input: {
         model_image: personImage,
         garment_image: clothingImage,
         category,
       },
-    }) as FalResponse;
+    });
     
     // Extract the URL from the images array
     if (result && Array.isArray(result.images) && result.images.length > 0) {

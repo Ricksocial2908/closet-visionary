@@ -103,45 +103,50 @@ const Index = () => {
   }, [result]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 p-8">
-      <div className="max-w-6xl mx-auto space-y-8">
+    <div className="min-h-screen bg-gradient-to-b from-gray-50 via-gray-100 to-gray-50 p-8">
+      <div className="max-w-6xl mx-auto space-y-12">
         <div className="flex justify-between items-center">
           <div className="space-y-4">
-            <h1 className="text-4xl font-bold text-gray-900">Virtual Try-On</h1>
-            <p className="text-lg text-gray-600">Upload images to see how clothes look on you</p>
+            <h1 className="text-5xl font-bold text-gray-900 font-playfair">
+              Virtual Try-On
+            </h1>
+            <p className="text-lg text-gray-600 font-playfair">
+              Experience how clothes look on you before you buy
+            </p>
           </div>
           
           <Sheet>
             <SheetTrigger asChild>
-              <Button variant="outline" size="icon">
+              <Button variant="outline" size="icon" className="rounded-full">
                 <Settings className="h-4 w-4" />
               </Button>
             </SheetTrigger>
             <SheetContent>
               <SheetHeader>
-                <SheetTitle>Settings</SheetTitle>
-                <SheetDescription>
+                <SheetTitle className="font-playfair text-2xl">Settings</SheetTitle>
+                <SheetDescription className="font-playfair">
                   Configure your FAL.ai API settings
                 </SheetDescription>
               </SheetHeader>
               <div className="space-y-6 py-6">
                 <div className="space-y-2">
-                  <Label htmlFor="apiKey">FAL.ai API Key</Label>
+                  <Label htmlFor="apiKey" className="font-playfair">FAL.ai API Key</Label>
                   <Input
                     id="apiKey"
                     type="password"
                     value={apiKey}
                     onChange={(e) => setApiKey(e.target.value)}
                     placeholder="Enter your FAL.ai API key"
+                    className="rounded-lg"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="category">Category</Label>
+                  <Label htmlFor="category" className="font-playfair">Category</Label>
                   <Select
                     value={selectedCategory}
                     onValueChange={(value) => setSelectedCategory(value as FalCategory)}
                   >
-                    <SelectTrigger>
+                    <SelectTrigger className="rounded-lg">
                       <SelectValue placeholder="Select a category" />
                     </SelectTrigger>
                     <SelectContent>
@@ -156,7 +161,7 @@ const Index = () => {
           </Sheet>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-8">
+        <div className="grid md:grid-cols-2 gap-12">
           <div className="max-w-[400px] mx-auto w-full">
             <ImageUpload onImageSelect={setPersonImage} label="Upload Person Image" />
           </div>
@@ -165,16 +170,16 @@ const Index = () => {
           </div>
         </div>
 
-        <div className="space-y-8">
+        <div className="space-y-12">
           <div className="flex justify-center">
             <Button
               onClick={handleTryOn}
               disabled={loading || !personImage || !clothingImage}
-              className="min-w-[200px]"
+              className="min-w-[200px] rounded-full font-playfair text-lg h-12 transition-all hover:scale-105"
             >
               {loading ? (
                 <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  <Loader2 className="mr-2 h-5 w-5 animate-spin" />
                   Generating...
                 </>
               ) : (
@@ -184,9 +189,9 @@ const Index = () => {
           </div>
 
           {result && (
-            <Card className="p-6 backdrop-blur-sm bg-white/30 border border-white/20 max-w-[800px] mx-auto">
-              <h2 className="text-xl font-semibold mb-4">Try-On Result</h2>
-              <div className="bg-white rounded-lg overflow-hidden">
+            <Card className="p-8 backdrop-blur-sm bg-white/80 border border-white/40 max-w-[800px] mx-auto shadow-xl rounded-2xl">
+              <h2 className="text-2xl font-semibold mb-6 font-playfair text-gray-900">Try-On Result</h2>
+              <div className="bg-white rounded-xl overflow-hidden shadow-lg">
                 <img 
                   src={result} 
                   alt="Try-on result" 

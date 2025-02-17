@@ -31,7 +31,7 @@ const Index = () => {
   const [loading, setLoading] = useState(false);
   const [videoLoading, setVideoLoading] = useState(false);
   const [apiKey, setApiKey] = useState(localStorage.getItem('FAL_KEY') || '');
-  const [selectedModel, setSelectedModel] = useState<FalModel>('fal-ai/fashion/try-on');
+  const [selectedModel, setSelectedModel] = useState<FalModel>('fashn/tryon');
   const { toast } = useToast();
 
   useEffect(() => {
@@ -150,7 +150,7 @@ const Index = () => {
                       <SelectValue placeholder="Select a model" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="fal-ai/fashion/try-on">Fashion Try-On</SelectItem>
+                      <SelectItem value="fashn/tryon">Fashion Try-On</SelectItem>
                       <SelectItem value="fal-ai/fashion-edit">Fashion Edit</SelectItem>
                     </SelectContent>
                   </Select>

@@ -16,7 +16,7 @@ export const generateTryOn = async (personImage: string, clothingImage: string, 
       input: {
         model_image: personImage,
         garment_image: clothingImage,
-        category: "long_sleeve_top", // Default category, you might want to make this configurable
+        category: "tops", // Using the correct category value from the allowed options
       },
     });
     return result as { image: string };

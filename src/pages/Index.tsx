@@ -208,9 +208,11 @@ const Index = () => {
           {result && (
             <Card className="p-6 backdrop-blur-sm bg-white/30 border border-white/20 max-w-[400px] mx-auto">
               <h2 className="text-xl font-semibold mb-4">Try-On Result</h2>
-              <div className="aspect-w-1 aspect-h-1">
-                <img src={result} alt="Try-on result" className="rounded-lg object-cover" />
-              </div>
+              <img 
+                src={result} 
+                alt="Try-on result" 
+                className="w-full h-auto rounded-lg object-contain"
+              />
               <div className="mt-4 flex justify-center">
                 <Button
                   onClick={handleVideoGeneration}
@@ -231,7 +233,7 @@ const Index = () => {
           )}
 
           {video && (
-            <Card className="p-6 backdrop-blur-sm bg-white/30 border border-white/20">
+            <Card className="p-6 backdrop-blur-sm bg-white/30 border border-white/20 max-w-[400px] mx-auto">
               <h2 className="text-xl font-semibold mb-4">Video</h2>
               <video
                 controls

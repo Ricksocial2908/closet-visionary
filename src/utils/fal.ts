@@ -1,7 +1,7 @@
 
 import * as fal from '@fal-ai/serverless-client';
 
-export type FalModel = 'fashn/tryon' | 'fal-ai/fashion-edit';
+export type FalModel = 'fashn/tryon';
 export type FalCategory = 'tops' | 'bottoms' | 'one-pieces';
 
 export const initializeFal = (apiKey: string) => {

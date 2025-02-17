@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useToast } from '../hooks/use-toast';
 import ImageUpload from '../components/ImageUpload';
@@ -32,7 +31,7 @@ const Index = () => {
   const [loading, setLoading] = useState(false);
   const [videoLoading, setVideoLoading] = useState(false);
   const [apiKey, setApiKey] = useState(localStorage.getItem('FAL_KEY') || '');
-  const [selectedModel, setSelectedModel] = useState<FalModel>('fashn/tryon');
+  const [selectedModel] = useState<FalModel>('fashn/tryon');
   const [selectedCategory, setSelectedCategory] = useState<FalCategory>('tops');
   const { toast } = useToast();
 
@@ -127,7 +126,6 @@ const Index = () => {
     }
   };
 
-  // Debug useEffect to monitor result state
   useEffect(() => {
     console.log('Result state changed:', result ? 'Has image' : 'No image');
     if (result) {
@@ -167,21 +165,6 @@ const Index = () => {
                     onChange={(e) => setApiKey(e.target.value)}
                     placeholder="Enter your FAL.ai API key"
                   />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="model">Model</Label>
-                  <Select
-                    value={selectedModel}
-                    onValueChange={(value) => setSelectedModel(value as FalModel)}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select a model" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="fashn/tryon">Fashion Try-On</SelectItem>
-                      <SelectItem value="fal-ai/fashion-edit">Fashion Edit</SelectItem>
-                    </SelectContent>
-                  </Select>
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="category">Category</Label>

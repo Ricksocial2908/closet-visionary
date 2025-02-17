@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { useToast } from '../hooks/use-toast';
 import ImageUpload from '../components/ImageUpload';
@@ -20,16 +21,14 @@ import {
   SheetTitle,
   SheetTrigger,
 } from '../components/ui/sheet';
-import { generateTryOn, generateVideo, initializeFal, type FalModel, type FalCategory } from '../utils/fal';
+import { generateTryOn, initializeFal, type FalModel, type FalCategory } from '../utils/fal';
 import { Loader2, Settings } from 'lucide-react';
 
 const Index = () => {
   const [personImage, setPersonImage] = useState<string | null>(null);
   const [clothingImage, setClothingImage] = useState<string | null>(null);
   const [result, setResult] = useState<string | null>(null);
-  const [video, setVideo] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const [videoLoading, setVideoLoading] = useState(false);
   const [apiKey, setApiKey] = useState(localStorage.getItem('FAL_KEY') || '');
   const [selectedModel] = useState<FalModel>('fashn/tryon');
   const [selectedCategory, setSelectedCategory] = useState<FalCategory>('tops');
@@ -93,36 +92,6 @@ const Index = () => {
       });
     } finally {
       setLoading(false);
-    }
-  };
-
-  const handleVideoGeneration = async () => {
-    if (!result) {
-      toast({
-        title: "No Image",
-        description: "Please generate a try-on image first.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    setVideoLoading(true);
-    try {
-      const videoResult = await generateVideo(result);
-      setVideo(videoResult.video);
-      toast({
-        title: "Success",
-        description: "Video generated successfully!",
-      });
-    } catch (error) {
-      console.error('Error in handleVideoGeneration:', error);
-      toast({
-        title: "Error",
-        description: "Failed to generate video. Please try again.",
-        variant: "destructive",
-      });
-    } finally {
-      setVideoLoading(false);
     }
   };
 
@@ -224,33 +193,6 @@ const Index = () => {
                   className="w-full h-auto max-h-[600px] object-contain"
                 />
               </div>
-              <div className="mt-4 flex justify-center">
-                <Button
-                  onClick={handleVideoGeneration}
-                  disabled={videoLoading}
-                  className="min-w-[200px]"
-                >
-                  {videoLoading ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Creating Video...
-                    </>
-                  ) : (
-                    'Generate Video'
-                  )}
-                </Button>
-              </div>
-            </Card>
-          )}
-
-          {video && (
-            <Card className="p-6 backdrop-blur-sm bg-white/30 border border-white/20 max-w-[800px] mx-auto">
-              <h2 className="text-xl font-semibold mb-4">Video</h2>
-              <video
-                controls
-                className="w-full rounded-lg"
-                src={video}
-              />
             </Card>
           )}
         </div>

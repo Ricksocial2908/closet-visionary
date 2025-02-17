@@ -3,7 +3,8 @@ import { useState } from 'react';
 import { Card } from './ui/card';
 import { Button } from './ui/button';
 import { GalleryItem, removeFromGallery } from '../utils/gallery';
-import { GalleryHorizontal, Save, Trash2 } from 'lucide-react';
+import { downloadImage } from '../utils/download';
+import { Download, GalleryHorizontal, Trash2 } from 'lucide-react';
 
 interface GalleryProps {
   items: GalleryItem[];
@@ -16,6 +17,11 @@ const Gallery = ({ items, onDelete }: GalleryProps) => {
   const handleDelete = (id: string) => {
     removeFromGallery(id);
     onDelete(id);
+  };
+
+  const handleDownload = (item: GalleryItem) => {
+    const fileName = `try-on-${item.category}-${new Date(item.createdAt).toISOString().split('T')[0]}.png`;
+    downloadImage(item.image, fileName);
   };
 
   if (items.length === 0) {
@@ -45,7 +51,15 @@ const Gallery = ({ items, onDelete }: GalleryProps) => {
               alt={`Gallery item ${item.category}`}
               className="w-full h-auto rounded-lg shadow-md"
             />
-            <div className="absolute top-2 right-2">
+            <div className="absolute top-2 right-2 flex gap-2">
+              <Button
+                variant="secondary"
+                size="icon"
+                onClick={() => handleDownload(item)}
+                className="opacity-0 group-hover:opacity-100 transition-opacity"
+              >
+                <Download className="h-4 w-4" />
+              </Button>
               <Button
                 variant="destructive"
                 size="icon"

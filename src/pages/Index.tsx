@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useToast } from '../hooks/use-toast';
 import ImageUpload from '../components/ImageUpload';
@@ -24,7 +23,8 @@ import {
 } from '../components/ui/sheet';
 import { generateTryOn, initializeFal, type FalModel, type FalCategory } from '../utils/fal';
 import { getGallery, saveToGallery, type GalleryItem } from '../utils/gallery';
-import { Loader2, Save, Settings } from 'lucide-react';
+import { downloadImage } from '../utils/download';
+import { Loader2, Save, Settings, Download } from 'lucide-react';
 
 const Index = () => {
   const [personImage, setPersonImage] = useState<string | null>(null);
@@ -122,6 +122,17 @@ const Index = () => {
     });
   };
 
+  const handleDownload = () => {
+    if (!result) return;
+    const fileName = `try-on-${selectedCategory}-${new Date().toISOString().split('T')[0]}.png`;
+    downloadImage(result, fileName);
+    
+    toast({
+      title: "Download Started",
+      description: "Your image is being downloaded.",
+    });
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 via-gray-100 to-gray-50 p-8">
       <div className="max-w-6xl mx-auto space-y-12">
@@ -212,14 +223,24 @@ const Index = () => {
             <Card className="p-8 backdrop-blur-sm bg-white/80 border border-white/40 max-w-[800px] mx-auto shadow-xl rounded-2xl">
               <div className="flex justify-between items-center mb-6">
                 <h2 className="text-2xl font-semibold font-playfair text-gray-900">Try-On Result</h2>
-                <Button
-                  onClick={handleSaveToGallery}
-                  variant="outline"
-                  className="gap-2 font-playfair"
-                >
-                  <Save className="h-4 w-4" />
-                  Save to Gallery
-                </Button>
+                <div className="flex gap-2">
+                  <Button
+                    onClick={handleDownload}
+                    variant="secondary"
+                    className="gap-2 font-playfair"
+                  >
+                    <Download className="h-4 w-4" />
+                    Download
+                  </Button>
+                  <Button
+                    onClick={handleSaveToGallery}
+                    variant="outline"
+                    className="gap-2 font-playfair"
+                  >
+                    <Save className="h-4 w-4" />
+                    Save to Gallery
+                  </Button>
+                </div>
               </div>
               <div className="bg-white rounded-xl overflow-hidden shadow-lg">
                 <img 

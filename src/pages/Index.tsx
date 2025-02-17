@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import { useToast } from '../hooks/use-toast';
 import ImageUpload from '../components/ImageUpload';
+import Gallery from '../components/Gallery';
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
 import { Input } from '../components/ui/input';
@@ -22,7 +23,8 @@ import {
   SheetTrigger,
 } from '../components/ui/sheet';
 import { generateTryOn, initializeFal, type FalModel, type FalCategory } from '../utils/fal';
-import { Loader2, Settings } from 'lucide-react';
+import { getGallery, saveToGallery, type GalleryItem } from '../utils/gallery';
+import { Loader2, Save, Settings } from 'lucide-react';
 
 const Index = () => {
   const [personImage, setPersonImage] = useState<string | null>(null);
@@ -32,6 +34,7 @@ const Index = () => {
   const [apiKey, setApiKey] = useState(localStorage.getItem('FAL_KEY') || '');
   const [selectedModel] = useState<FalModel>('fashn/tryon');
   const [selectedCategory, setSelectedCategory] = useState<FalCategory>('tops');
+  const [galleryItems, setGalleryItems] = useState<GalleryItem[]>([]);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -39,6 +42,10 @@ const Index = () => {
       initializeFal(apiKey);
     }
   }, [apiKey]);
+
+  useEffect(() => {
+    setGalleryItems(getGallery());
+  }, []);
 
   const handleTryOn = async () => {
     if (!personImage || !clothingImage) {
@@ -95,12 +102,25 @@ const Index = () => {
     }
   };
 
-  useEffect(() => {
-    console.log('Result state changed:', result ? 'Has image' : 'No image');
-    if (result) {
-      console.log('Result preview:', result.slice(0, 100) + '...');
-    }
-  }, [result]);
+  const handleSaveToGallery = () => {
+    if (!result) return;
+    
+    const savedItem = saveToGallery(result, selectedCategory);
+    setGalleryItems(prev => [savedItem, ...prev]);
+    
+    toast({
+      title: "Saved to Gallery",
+      description: "Your creation has been saved to the gallery.",
+    });
+  };
+
+  const handleGalleryDelete = (id: string) => {
+    setGalleryItems(prev => prev.filter(item => item.id !== id));
+    toast({
+      title: "Removed from Gallery",
+      description: "The item has been removed from your gallery.",
+    });
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 via-gray-100 to-gray-50 p-8">
@@ -190,7 +210,17 @@ const Index = () => {
 
           {result && (
             <Card className="p-8 backdrop-blur-sm bg-white/80 border border-white/40 max-w-[800px] mx-auto shadow-xl rounded-2xl">
-              <h2 className="text-2xl font-semibold mb-6 font-playfair text-gray-900">Try-On Result</h2>
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-2xl font-semibold font-playfair text-gray-900">Try-On Result</h2>
+                <Button
+                  onClick={handleSaveToGallery}
+                  variant="outline"
+                  className="gap-2 font-playfair"
+                >
+                  <Save className="h-4 w-4" />
+                  Save to Gallery
+                </Button>
+              </div>
               <div className="bg-white rounded-xl overflow-hidden shadow-lg">
                 <img 
                   src={result} 
@@ -200,6 +230,8 @@ const Index = () => {
               </div>
             </Card>
           )}
+
+          <Gallery items={galleryItems} onDelete={handleGalleryDelete} />
         </div>
       </div>
     </div>

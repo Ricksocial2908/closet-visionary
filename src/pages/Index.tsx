@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useToast } from '../hooks/use-toast';
 import ImageUpload from '../components/ImageUpload';
@@ -208,13 +207,11 @@ const Index = () => {
           {result && (
             <Card className="p-6 backdrop-blur-sm bg-white/30 border border-white/20 max-w-[800px] mx-auto">
               <h2 className="text-xl font-semibold mb-4">Try-On Result</h2>
-              <div className="aspect-w-1 aspect-h-1">
-                <img 
-                  src={result} 
-                  alt="Try-on result" 
-                  className="rounded-lg object-cover"
-                />
-              </div>
+              <img 
+                src={result} 
+                alt="Try-on result" 
+                className="w-full h-auto max-h-[600px] rounded-lg object-contain"
+              />
               <div className="mt-4 flex justify-center">
                 <Button
                   onClick={handleVideoGeneration}

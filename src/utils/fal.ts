@@ -14,8 +14,9 @@ export const generateTryOn = async (personImage: string, clothingImage: string, 
   try {
     const result = await fal.run(model, {
       input: {
-        person_image: personImage,
-        cloth_image: clothingImage,
+        model_image: personImage,
+        garment_image: clothingImage,
+        category: "long_sleeve_top", // Default category, you might want to make this configurable
       },
     });
     return result as { image: string };

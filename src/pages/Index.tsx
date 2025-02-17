@@ -179,8 +179,12 @@ const Index = () => {
         </div>
 
         <div className="grid md:grid-cols-2 gap-8">
-          <ImageUpload onImageSelect={setPersonImage} label="Upload Person Image" />
-          <ImageUpload onImageSelect={setClothingImage} label="Upload Clothing Image" />
+          <div className="max-w-[400px] mx-auto w-full">
+            <ImageUpload onImageSelect={setPersonImage} label="Upload Person Image" />
+          </div>
+          <div className="max-w-[400px] mx-auto w-full">
+            <ImageUpload onImageSelect={setClothingImage} label="Upload Clothing Image" />
+          </div>
         </div>
 
         <div className="space-y-8">
@@ -202,7 +206,7 @@ const Index = () => {
           </div>
 
           {result && (
-            <Card className="p-6 backdrop-blur-sm bg-white/30 border border-white/20">
+            <Card className="p-6 backdrop-blur-sm bg-white/30 border border-white/20 max-w-[400px] mx-auto">
               <h2 className="text-xl font-semibold mb-4">Try-On Result</h2>
               <div className="aspect-w-1 aspect-h-1">
                 <img src={result} alt="Try-on result" className="rounded-lg object-cover" />

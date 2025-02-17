@@ -39,7 +39,7 @@
 
 .aspect-w-1 {
   position: relative;
-  padding-bottom: 100%;
+  padding-bottom: 150%; /* Changed from 100% to 150% for portrait */
 }
 
 .aspect-h-1 {
@@ -51,3 +51,4 @@
   right: 0;
   bottom: 0;
 }
+

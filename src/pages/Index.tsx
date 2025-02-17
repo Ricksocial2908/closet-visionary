@@ -183,59 +183,60 @@ const Index = () => {
           <ImageUpload onImageSelect={setClothingImage} label="Upload Clothing Image" />
         </div>
 
-        <div className="flex justify-center gap-4">
-          <Button
-            onClick={handleTryOn}
-            disabled={loading || !personImage || !clothingImage}
-            className="min-w-[200px]"
-          >
-            {loading ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Generating...
-              </>
-            ) : (
-              'Generate Try-On'
-            )}
-          </Button>
-
-          {result && (
+        <div className="space-y-8">
+          <div className="flex justify-center">
             <Button
-              onClick={handleVideoGeneration}
-              disabled={videoLoading}
+              onClick={handleTryOn}
+              disabled={loading || !personImage || !clothingImage}
               className="min-w-[200px]"
             >
-              {videoLoading ? (
+              {loading ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Creating Video...
+                  Generating...
                 </>
               ) : (
-                'Generate Video'
+                'Generate Try-On'
               )}
             </Button>
+          </div>
+
+          {result && (
+            <Card className="p-6 backdrop-blur-sm bg-white/30 border border-white/20">
+              <h2 className="text-xl font-semibold mb-4">Try-On Result</h2>
+              <div className="aspect-w-1 aspect-h-1">
+                <img src={result} alt="Try-on result" className="rounded-lg object-cover" />
+              </div>
+              <div className="mt-4 flex justify-center">
+                <Button
+                  onClick={handleVideoGeneration}
+                  disabled={videoLoading}
+                  className="min-w-[200px]"
+                >
+                  {videoLoading ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Creating Video...
+                    </>
+                  ) : (
+                    'Generate Video'
+                  )}
+                </Button>
+              </div>
+            </Card>
+          )}
+
+          {video && (
+            <Card className="p-6 backdrop-blur-sm bg-white/30 border border-white/20">
+              <h2 className="text-xl font-semibold mb-4">Video</h2>
+              <video
+                controls
+                className="w-full rounded-lg"
+                src={video}
+              />
+            </Card>
           )}
         </div>
-
-        {result && (
-          <Card className="p-6 backdrop-blur-sm bg-white/30 border border-white/20">
-            <h2 className="text-xl font-semibold mb-4">Result</h2>
-            <div className="aspect-w-1 aspect-h-1">
-              <img src={result} alt="Try-on result" className="rounded-lg object-cover" />
-            </div>
-          </Card>
-        )}
-
-        {video && (
-          <Card className="p-6 backdrop-blur-sm bg-white/30 border border-white/20">
-            <h2 className="text-xl font-semibold mb-4">Video</h2>
-            <video
-              controls
-              className="w-full rounded-lg"
-              src={video}
-            />
-          </Card>
-        )}
       </div>
     </div>
   );

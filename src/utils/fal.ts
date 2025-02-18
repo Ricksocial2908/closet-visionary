@@ -12,11 +12,21 @@ interface FalResponse {
   images: FalImage[];
 }
 
+interface FalError {
+  message: string;
+  details?: string;
+}
+
 export const initializeFal = (apiKey: string) => {
-  fal.config({
-    credentials: apiKey,
-  });
-  localStorage.setItem('FAL_KEY', apiKey);
+  try {
+    fal.config({
+      credentials: apiKey,
+    });
+    localStorage.setItem('FAL_KEY', apiKey);
+  } catch (error) {
+    console.error('Error initializing FAL:', error);
+    throw new Error('Failed to initialize FAL API client');
+  }
 };
 
 export const generateTryOn = async (
@@ -25,11 +35,27 @@ export const generateTryOn = async (
   category: FalCategory = 'tops',
   model: FalModel = 'fashn/tryon'
 ) => {
+  if (!personImage || !clothingImage) {
+    throw new Error('Both person and clothing images are required');
+  }
+
   try {
     console.log('Starting try-on generation...');
     console.log('Person image:', personImage?.slice(0, 100) + '...');
     console.log('Clothing image:', clothingImage?.slice(0, 100) + '...');
     
+    // Validate API key
+    const apiKey = localStorage.getItem('FAL_KEY');
+    if (!apiKey) {
+      throw new Error('FAL API key is missing. Please add your API key in settings.');
+    }
+
+    // Validate URL format
+    const modelUrl = `https://fal.run/${model}`;
+    if (!modelUrl.startsWith('https://fal.run/')) {
+      throw new Error('Invalid FAL API endpoint');
+    }
+
     const result = await fal.run(model, {
       input: {
         model_image: personImage,
@@ -38,14 +64,28 @@ export const generateTryOn = async (
       },
     }) as FalResponse;
     
-    // Extract the URL from the images array
-    if (result && Array.isArray(result.images) && result.images.length > 0) {
-      return { image: result.images[0].url };
+    if (!result || !Array.isArray(result.images) || result.images.length === 0) {
+      throw new Error('Invalid response from FAL API');
     }
     
-    throw new Error('No image in response');
-  } catch (error) {
+    return { image: result.images[0].url };
+  } catch (error: any) {
     console.error('Error generating try-on:', error);
-    throw error;
+    
+    // Handle specific error cases
+    if (error.message.includes('Failed to fetch')) {
+      throw new Error('Unable to connect to FAL API. Please check your internet connection and try again.');
+    }
+    
+    if (error.response?.status === 401) {
+      throw new Error('Invalid API key. Please check your FAL API key in settings.');
+    }
+    
+    if (error.response?.status === 429) {
+      throw new Error('Too many requests. Please wait a moment and try again.');
+    }
+
+    // Throw a user-friendly error message
+    throw new Error(error.message || 'An error occurred while generating the try-on. Please try again.');
   }
 };

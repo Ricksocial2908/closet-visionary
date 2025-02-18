@@ -52,12 +52,16 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         });
       } else if (event === 'TOKEN_REFRESHED') {
         console.log('Token refreshed successfully');
-      } else if (event === 'USER_DELETED') {
+      } else if (event === 'USER_UPDATED') {
+        toast({
+          title: "Profile Updated",
+          description: "Your profile has been updated successfully.",
+        });
+      } else if (event === 'PASSWORD_RECOVERY') {
         navigate('/auth');
         toast({
-          title: "Account deleted",
-          description: "Your account has been deleted.",
-          variant: "destructive",
+          title: "Password Recovery",
+          description: "Please check your email for password reset instructions.",
         });
       }
     });

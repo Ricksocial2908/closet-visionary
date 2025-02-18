@@ -21,6 +21,7 @@ export const initializeFal = (apiKey: string) => {
   try {
     fal.config({
       credentials: apiKey,
+      proxyUrl: 'https://110011.org/api', // Use FAL's official CORS proxy
     });
     localStorage.setItem('FAL_KEY', apiKey);
   } catch (error) {
@@ -73,8 +74,8 @@ export const generateTryOn = async (
     console.error('Error generating try-on:', error);
     
     // Handle specific error cases
-    if (error.message.includes('Failed to fetch')) {
-      throw new Error('Unable to connect to FAL API. Please check your internet connection and try again.');
+    if (error.message.includes('Failed to fetch') || error.message.includes('CORS')) {
+      throw new Error('Unable to connect to FAL API. This might be due to CORS restrictions. Please ensure you have the correct API configuration.');
     }
     
     if (error.response?.status === 401) {

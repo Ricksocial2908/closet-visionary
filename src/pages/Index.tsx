@@ -25,6 +25,9 @@ import { generateTryOn, initializeFal, type FalModel, type FalCategory } from '.
 import { getGallery, saveToGallery, type GalleryItem } from '../utils/gallery';
 import { downloadImage } from '../utils/download';
 import { Loader2, Save, Settings, Download } from 'lucide-react';
+import { useAuth } from '../contexts/AuthContext';
+import { supabase } from '../integrations/supabase/client';
+import { useNavigate } from 'react-router-dom';
 
 const Index = () => {
   const [personImage, setPersonImage] = useState<string | null>(null);
@@ -36,6 +39,35 @@ const Index = () => {
   const [selectedCategory, setSelectedCategory] = useState<FalCategory>('tops');
   const [galleryItems, setGalleryItems] = useState<GalleryItem[]>([]);
   const { toast } = useToast();
+  const { session } = useAuth();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchGallery = async () => {
+      if (session?.user) {
+        const { data, error } = await supabase
+          .from('try_ons')
+          .select('*')
+          .order('created_at', { ascending: false });
+        
+        if (error) {
+          console.error('Error fetching gallery:', error);
+          return;
+        }
+
+        if (data) {
+          setGalleryItems(data.map(item => ({
+            id: item.id,
+            image: item.result_image,
+            category: item.category,
+            createdAt: new Date(item.created_at),
+          })));
+        }
+      }
+    };
+
+    fetchGallery();
+  }, [session]);
 
   useEffect(() => {
     if (apiKey) {
@@ -102,24 +134,83 @@ const Index = () => {
     }
   };
 
-  const handleSaveToGallery = () => {
-    if (!result) return;
+  const handleSaveToGallery = async () => {
+    if (!result || !session?.user) {
+      if (!session?.user) {
+        toast({
+          title: "Authentication Required",
+          description: "Please sign in to save your try-ons.",
+          variant: "destructive",
+        });
+        navigate('/auth');
+      }
+      return;
+    }
     
-    const savedItem = saveToGallery(result, selectedCategory);
-    setGalleryItems(prev => [savedItem, ...prev]);
-    
-    toast({
-      title: "Saved to Gallery",
-      description: "Your creation has been saved to the gallery.",
-    });
+    try {
+      const { data, error } = await supabase
+        .from('try_ons')
+        .insert({
+          result_image: result,
+          person_image: personImage,
+          clothing_image: clothingImage,
+          category: selectedCategory,
+          user_id: session.user.id,
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      if (data) {
+        const savedItem = {
+          id: data.id,
+          image: data.result_image,
+          category: data.category,
+          createdAt: new Date(data.created_at),
+        };
+        
+        setGalleryItems(prev => [savedItem, ...prev]);
+        
+        toast({
+          title: "Saved to Gallery",
+          description: "Your creation has been saved to the gallery.",
+        });
+      }
+    } catch (error: any) {
+      console.error('Error saving to gallery:', error);
+      toast({
+        title: "Error",
+        description: "Failed to save to gallery. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
-  const handleGalleryDelete = (id: string) => {
-    setGalleryItems(prev => prev.filter(item => item.id !== id));
-    toast({
-      title: "Removed from Gallery",
-      description: "The item has been removed from your gallery.",
-    });
+  const handleGalleryDelete = async (id: string) => {
+    if (!session?.user) return;
+
+    try {
+      const { error } = await supabase
+        .from('try_ons')
+        .delete()
+        .eq('id', id);
+
+      if (error) throw error;
+
+      setGalleryItems(prev => prev.filter(item => item.id !== id));
+      toast({
+        title: "Removed from Gallery",
+        description: "The item has been removed from your gallery.",
+      });
+    } catch (error: any) {
+      console.error('Error deleting from gallery:', error);
+      toast({
+        title: "Error",
+        description: "Failed to delete from gallery. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   const handleDownload = () => {
@@ -151,50 +242,69 @@ const Index = () => {
             </p>
           </div>
           
-          <Sheet>
-            <SheetTrigger asChild>
-              <Button variant="outline" size="icon" className="rounded-full">
-                <Settings className="h-4 w-4" />
+          <div className="flex items-center gap-4">
+            {session?.user ? (
+              <Button
+                variant="outline"
+                onClick={() => supabase.auth.signOut()}
+                className="font-playfair"
+              >
+                Sign Out
               </Button>
-            </SheetTrigger>
-            <SheetContent>
-              <SheetHeader>
-                <SheetTitle className="font-playfair text-2xl">Settings</SheetTitle>
-                <SheetDescription className="font-playfair">
-                  Configure your FAL.ai API settings
-                </SheetDescription>
-              </SheetHeader>
-              <div className="space-y-6 py-6">
-                <div className="space-y-2">
-                  <Label htmlFor="apiKey" className="font-playfair">FAL.ai API Key</Label>
-                  <Input
-                    id="apiKey"
-                    type="password"
-                    value={apiKey}
-                    onChange={(e) => setApiKey(e.target.value)}
-                    placeholder="Enter your FAL.ai API key"
-                    className="rounded-lg"
-                  />
+            ) : (
+              <Button
+                variant="outline"
+                onClick={() => navigate('/auth')}
+                className="font-playfair"
+              >
+                Sign In
+              </Button>
+            )}
+            <Sheet>
+              <SheetTrigger asChild>
+                <Button variant="outline" size="icon" className="rounded-full">
+                  <Settings className="h-4 w-4" />
+                </Button>
+              </SheetTrigger>
+              <SheetContent>
+                <SheetHeader>
+                  <SheetTitle className="font-playfair text-2xl">Settings</SheetTitle>
+                  <SheetDescription className="font-playfair">
+                    Configure your FAL.ai API settings
+                  </SheetDescription>
+                </SheetHeader>
+                <div className="space-y-6 py-6">
+                  <div className="space-y-2">
+                    <Label htmlFor="apiKey" className="font-playfair">FAL.ai API Key</Label>
+                    <Input
+                      id="apiKey"
+                      type="password"
+                      value={apiKey}
+                      onChange={(e) => setApiKey(e.target.value)}
+                      placeholder="Enter your FAL.ai API key"
+                      className="rounded-lg"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="category" className="font-playfair">Category</Label>
+                    <Select
+                      value={selectedCategory}
+                      onValueChange={(value) => setSelectedCategory(value as FalCategory)}
+                    >
+                      <SelectTrigger className="rounded-lg">
+                        <SelectValue placeholder="Select a category" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="tops">Tops</SelectItem>
+                        <SelectItem value="bottoms">Bottoms</SelectItem>
+                        <SelectItem value="one-pieces">One Pieces</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="category" className="font-playfair">Category</Label>
-                  <Select
-                    value={selectedCategory}
-                    onValueChange={(value) => setSelectedCategory(value as FalCategory)}
-                  >
-                    <SelectTrigger className="rounded-lg">
-                      <SelectValue placeholder="Select a category" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="tops">Tops</SelectItem>
-                      <SelectItem value="bottoms">Bottoms</SelectItem>
-                      <SelectItem value="one-pieces">One Pieces</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-            </SheetContent>
-          </Sheet>
+              </SheetContent>
+            </Sheet>
+          </div>
         </div>
 
         <div className="grid md:grid-cols-2 gap-12">
